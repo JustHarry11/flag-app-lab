@@ -1,35 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.jsx
+import axios from "axios";
+import { useEffect, useState } from "react";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [countryFlags, setCountryFlags] = useState([])
 
+  useEffect(() => {
+    async function getFlagData() {
+      try {
+        const { data } = await axios.get(`https://restcountries.com/v3.1/all`)
+        setCountryFlags(data)
+        // setCountryFlags(countryFlags.sort((a, b) => a.name > b.name ? 1 : -1))
+
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getFlagData()
+  }, [])
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <div className="flags">
+        {countryFlags.length > 0 &&
+          countryFlags.map(countryFlag => {
+            return (
+              <div key={countryFlag.name.common} className="each-flag">
+                <h2>{countryFlag.name.common}</h2>
+                <p>{countryFlag.name.official}</p>
+                <img src={countryFlag.flags.png} alt={countryFlag.name.alt}></img>
+
+              </div>
+
+
+            )
+          })}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
     </>
   )
 }
 
-export default App
